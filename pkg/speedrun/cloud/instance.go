@@ -71,9 +71,9 @@ func SetupTLS() (*tls.Config, error) {
 
 }
 
-func filter(instnces []Instance, target string) ([]Instance, error) {
+func filter(instances []Instance, target string) ([]Instance, error) {
 	if target == "" {
-		return instnces, nil
+		return instances, nil
 	}
 
 	var subset []Instance
@@ -83,7 +83,7 @@ func filter(instnces []Instance, target string) ([]Instance, error) {
 		return nil, err
 	}
 
-	for _, instance := range instnces {
+	for _, instance := range instances {
 		output, err := expr.Run(program, instance)
 		if err != nil {
 			continue
