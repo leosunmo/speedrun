@@ -24,16 +24,10 @@ func NewAWSClient() (*AWSClient, error) {
 
 func (c *AWSClient) GetInstances(ctx context.Context) ([]Instance, error) {
 	descInput := &ec2.DescribeInstancesInput{
-		MaxResults: aws.Int32(100),
+		MaxResults: aws.Int32(20),
 	}
 
-	p := ec2.NewDescribeInstancesPaginator(
-		c.ec2Client,
-		descInput,
-		func(dipo *ec2.DescribeInstancesPaginatorOptions) {
-			dipo.Limit = 20
-		},
-	)
+	p := ec2.NewDescribeInstancesPaginator(c.ec2Client, descInput)
 	instances := []Instance{}
 
 	for p.HasMorePages() {
