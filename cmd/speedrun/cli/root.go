@@ -46,6 +46,7 @@ func Execute() {
 	dir := filepath.Join(home, ".speedrun")
 	configPath := filepath.Join(dir, "config.toml")
 
+	// General config
 	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", configPath, "config file")
 	rootCmd.PersistentFlags().StringP("loglevel", "l", "info", "Log level")
 	rootCmd.PersistentFlags().BoolP("json", "j", false, "Output logs in JSON format")

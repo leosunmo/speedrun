@@ -15,8 +15,8 @@ type PlatformProvider interface {
 type ProviderType string
 
 const (
-	PlatformGCP = ProviderType("gcp")
-	PlatformAWS = ProviderType("aws")
+	ProviderGCP = ProviderType("gcp")
+	ProviderAWS = ProviderType("aws")
 )
 
 func GetProviders() ([]PlatformProvider, error) {
