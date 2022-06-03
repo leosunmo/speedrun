@@ -6,14 +6,17 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/spf13/viper"
 )
 
 type AWSClient struct {
 	ec2Client *ec2.Client
 }
 
-func NewAWSClient() (*AWSClient, error) {
-	cfg, err := config.LoadDefaultConfig(context.TODO())
+func newAWSClient() (*AWSClient, error) {
+	cfg, err := config.LoadDefaultConfig(context.TODO(),
+		config.WithRegion(viper.GetString("aws.region")),
+		config.WithSharedConfigProfile(viper.GetString("aws.profile")))
 	if err != nil {
 		return nil, err
 	}
@@ -22,7 +25,7 @@ func NewAWSClient() (*AWSClient, error) {
 	return &AWSClient{ec2Client}, nil
 }
 
-func (c *AWSClient) GetInstances(ctx context.Context) ([]Instance, error) {
+func (c *AWSClient) getInstances(ctx context.Context) ([]Instance, error) {
 	descInput := &ec2.DescribeInstancesInput{
 		MaxResults: aws.Int32(20),
 	}
