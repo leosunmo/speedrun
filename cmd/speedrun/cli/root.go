@@ -64,6 +64,20 @@ func Execute() {
 	viper.BindPFlag("tls.key", rootCmd.PersistentFlags().Lookup("key"))
 	viper.BindPFlag("portal.use-private-ip", rootCmd.PersistentFlags().Lookup("use-private-ip"))
 
+	// AWS specific config
+	rootCmd.PersistentFlags().String("aws-region", "", "AWS region")
+	rootCmd.PersistentFlags().String("aws-profile", "", "AWS profile to use")
+
+	viper.BindPFlag("aws.region", rootCmd.PersistentFlags().Lookup("aws-region"))
+	viper.BindPFlag("aws.profile", rootCmd.PersistentFlags().Lookup("aws-profile"))
+
+	// GCP specific config
+	rootCmd.PersistentFlags().String("gcp-project", "", "GCP project to use")
+	rootCmd.PersistentFlags().String("gcp-credentials", "", "GCP credential file location")
+
+	viper.BindPFlag("gcp.project", rootCmd.PersistentFlags().Lookup("gcp-project"))
+	viper.BindPFlag("gcp.credentials", rootCmd.PersistentFlags().Lookup("gcp-credentials"))
+
 	rootCmd.DisableSuggestions = false
 
 	if err := rootCmd.Execute(); err != nil {
