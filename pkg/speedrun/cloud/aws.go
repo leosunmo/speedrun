@@ -47,6 +47,7 @@ func (c *AWSClient) GetInstances(ctx context.Context) ([]Instance, error) {
 					Name:           *instance.InstanceId,
 					PrivateAddress: *instance.PrivateIpAddress,
 					PublicAddress:  *instance.PublicIpAddress,
+					platform:       ProviderAWS,
 					Labels:         kvTags,
 				}
 				instances = append(instances, i)

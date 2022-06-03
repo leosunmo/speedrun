@@ -37,6 +37,7 @@ func (c *GoogleClient) GetInstances(project string) ([]Instance, error) {
 					Name:           instance.Name,
 					PrivateAddress: instance.NetworkInterfaces[0].NetworkIP,
 					PublicAddress:  instance.NetworkInterfaces[0].AccessConfigs[0].NatIP,
+					platform:       ProviderGCP,
 					Labels:         instance.Labels,
 				}
 				instances = append(instances, i)
