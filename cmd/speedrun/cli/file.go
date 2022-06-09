@@ -8,30 +8,34 @@ import (
 	"time"
 
 	"github.com/alitto/pond"
+	"github.com/apex/log"
 	"github.com/dpogorzelski/speedrun/pkg/speedrun/cloud"
 	portalpb "github.com/dpogorzelski/speedrun/proto/portal"
-	"storj.io/drpc/drpcconn"
-
-	"github.com/apex/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"storj.io/drpc/drpcconn"
 )
 
-var runCmd = &cobra.Command{
-	Use:     "run <command to run>",
-	Short:   "Run a shell command on remote servers",
-	Example: "  speedrun run whoami\n  speedrun run whoami --target \"labels.foo = bar AND labels.environment = staging\"",
+var fileCmd = &cobra.Command{
+	Use:              "file",
+	Short:            "Manage files",
+	TraverseChildren: true,
+}
+
+var readCmd = &cobra.Command{
+	Use:     "read <path>",
+	Short:   "Read a file",
+	Example: "  speedrun file read /etc/resolv.conf",
 	Args:    cobra.MinimumNArgs(1),
-	RunE:    run,
+	RunE:    read,
 }
 
 func init() {
-	runCmd.SetUsageTemplate(usage)
+	fileCmd.SetUsageTemplate(usage)
+	fileCmd.AddCommand(readCmd)
 }
 
-func run(cmd *cobra.Command, args []string) error {
-	command := strings.Join(args, " ")
-	s := strings.Split(command, " ")
+func read(cmd *cobra.Command, args []string) error {
 	usePrivateIP := viper.GetBool("portal.use-private-ip")
 
 	tlsConfig, err := cloud.SetupTLS()
@@ -44,18 +48,9 @@ func run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	providers, err := cloud.GetProviders()
+	portals, err := cloud.GetInstances(target)
 	if err != nil {
-		// We failed to get any provider, so stopping here.
 		return err
-	}
-	var instances []cloud.Instance
-	for _, provider := range providers {
-		inst, err := cloud.GetInstancesFromProvider(context.Background(), provider, target)
-		if err != nil {
-			return err
-		}
-		instances = append(instances, inst...)
 	}
 
 	pool := pond.New(1000, 10000)
@@ -82,12 +77,14 @@ func run(cmd *cobra.Command, args []string) error {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 			defer cancel()
 
-			r, err := c.RunCommand(ctx, &portalpb.CommandRequest{Name: s[0], Args: s[1:]})
+			path := strings.Join(args, " ")
+			r, err := c.FileRead(ctx, &portalpb.FileReadRequest{Path: path})
 			if err != nil {
 				log.Error(err.Error())
 				return
 			}
-			log.WithField("state", r.GetState()).Info(r.GetMessage())
+			log.WithField("state", r.GetState()).Infof("Contents of %s:\n%s", path, r.GetContent())
+
 		})
 	}
 	pool.StopAndWait()

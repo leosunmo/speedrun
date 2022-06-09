@@ -5,7 +5,6 @@ import (
 	"crypto/tls"
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/apex/log"
 	jsonhandler "github.com/apex/log/handlers/json"
@@ -31,7 +30,7 @@ func Execute() {
 		Version:       fmt.Sprintf("%s, commit: %s, date: %s", version, commit, date),
 		SilenceUsage:  true,
 		SilenceErrors: true,
-		RunE: func(cmd *cobra.Command, args []string) error {
+		RunE: func(_ *cobra.Command, _ []string) error {
 			insecure := viper.GetBool("tls.insecure")
 			caPath := viper.GetString("tls.ca")
 			certPath := viper.GetString("tls.cert")
@@ -71,11 +70,8 @@ func Execute() {
 		},
 	}
 
-	dir := "/etc/portal"
-	configPath := filepath.Join(dir, "config.toml")
-
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", configPath, "config file")
+	rootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "c", "config.toml", "config file")
 	rootCmd.PersistentFlags().StringP("loglevel", "l", "info", "Log level")
 	rootCmd.PersistentFlags().BoolP("json", "j", false, "Output logs in JSON format")
 	rootCmd.Flags().IntP("port", "p", 1337, "Port to listen on for connections")

@@ -2,10 +2,10 @@ Usage:{{if .Runnable}}
   {{.UseLine}}{{end}}{{if .HasAvailableSubCommands}}
   {{.CommandPath}} [command]{{end}}
 
-Core Commands:{{range .Commands}}{{if (or (eq .Name "help") (eq .Name "init") (eq .Name "key") (eq .Name "portal") (eq .Name "completion"))}}
+Core Commands:{{range .Commands}}{{if (or (eq .Name "help") (eq .Name "completion"))}}
   {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}
 
-Action Commands:{{range .Commands}}{{if (or (eq .Name "run") (eq .Name "exec") (eq .Name "service"))}}
+Action Commands:{{range .Commands}}{{if (or (eq .Name "run") (eq .Name "exec") (eq .Name "service") (eq .Name "file") (eq .Name "system") )}}
   {{rpad .Name .NamePadding }} {{.Short}}{{end}}{{end}}
 {{if .HasAvailableLocalFlags}}
 Flags:
