@@ -59,7 +59,7 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	pool := pond.New(1000, 10000)
-	for _, p := range portals {
+	for _, p := range instances {
 		portal := p
 		pool.Submit(func() {
 			fields := log.Fields{

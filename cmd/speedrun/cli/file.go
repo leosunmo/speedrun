@@ -48,13 +48,23 @@ func read(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	portals, err := cloud.GetInstances(target)
+	providers, err := cloud.GetProviders()
 	if err != nil {
+		// We failed to get any provider, so stopping here.
 		return err
 	}
 
+	var instances []cloud.Instance
+	for _, provider := range providers {
+		inst, err := cloud.GetInstancesFromProvider(context.Background(), provider, target)
+		if err != nil {
+			return err
+		}
+		instances = append(instances, inst...)
+	}
+
 	pool := pond.New(1000, 10000)
-	for _, p := range portals {
+	for _, p := range instances {
 		portal := p
 		pool.Submit(func() {
 			fields := log.Fields{
